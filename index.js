@@ -33,7 +33,14 @@ app.get('/api/genres', (req, res) => {
 });
 
 app.get('/api/genres/:id', (req, res) => {
-	res.send(req.params.id);
+	const id = req.params.id;
+	const genre = genres.find(genre => genre.id.toString() === id);
+	// Returns error and ends function if route doesnt exist
+	if (!genre) {
+		res.status(404).send('Genre does not exist');
+		return
+	}
+	res.send(genre);
 });
 
 app.listen(port, () => {console.log(`Listening on port ${port}`)});
@@ -41,3 +48,4 @@ app.listen(port, () => {console.log(`Listening on port ${port}`)});
 // Build a route
 // Have the route return all the genres
 // Have a route return a specific genre
+	// Call using the ID, should return an object
