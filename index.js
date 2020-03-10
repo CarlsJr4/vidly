@@ -85,6 +85,11 @@ app.put('/api/genres/:id', (req, res) => {
 		"title": req.body.title
 	}
 
+	if (!req.body.title) {
+		res.status(400).send("You must include the title of the genre.")
+		return
+	}
+
 	const index = genres.indexOf(genre);
 	genres.splice(index, 1, updatedGenre);
 
