@@ -37,7 +37,7 @@ app.get('/api/genres/:id', (req, res) => {
 	const genre = genres.find(genre => genre.id.toString() === id);
 	// Returns error and ends function if route doesnt exist
 	if (!genre) {
-		res.status(404).send('Genre does not exist');
+		res.status(404).send('404 error. The genre you searched for does not exist.');
 		return
 	}
 	res.send(genre);
