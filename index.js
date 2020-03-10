@@ -1,25 +1,14 @@
-// Prompt: Vidly is an imaginary service for renting movies
-// Build the back-end for managing the list of genres
-// http://vidly.com/api/genres
-
-// Endpoint for all genres
-// CRUD genres (GET, POST, PUT, DELETE)
-// Create a fake database object here. An array
-// Create routes here and route handlers
-// Input validation
-// Returned data should be in JSON format (i.e. {"userId": 1, "id": 1})
-// Remember that some values might need to be parsed (i.e. parseInt(string));
-
 const express = require('express');
 // const Joi = require('@hapi/joi');
+
+// FINAL STEP:
+// Refactor the code to be more DRY
 
 const app = express();
 const port = 3000;
 
 app.use(express.json());
 
-// How should we define this array? What fields should we use?
-// According to placeholder JSON, should have an ID and title?
 let genres = [
 	{"id": 1, "title": "Horror"},
 	{"id": 2, "title": "Action"},
@@ -94,13 +83,26 @@ app.put('/api/genres/:id', (req, res) => {
 	genres.splice(index, 1, updatedGenre);
 
 	res.send(genres[index]);
-})
+});
+
+
+// DELETE request
+app.delete('/api/genres/:id', (req, res) => {
+	// DELETE should be pretty straightforward
+	// Almost the same as PUT, but splice without replacing anything
+	const id = req.params.id;
+	const genre = genres.find(genre => genre.id.toString() === id);
+
+	if (!genre) {
+		res.status(404).send("Can't find the requested genre.")
+		return
+	}
+
+	const index = genres.indexOf(genre);
+	genres.splice(index, 1);
+
+	res.send(genres);
+});
 
 
 app.listen(port, () => {console.log(`Listening on port ${port}`)});
-
-// Build a route
-// Have the route return all the genres
-// Have a route return a specific genre
-	// Call using the ID, should return an object
-// Now, create POST, PUT, DELETE requests
