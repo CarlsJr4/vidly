@@ -11,6 +11,8 @@
 // Remember that some values might need to be parsed (i.e. parseInt(string));
 
 const express = require('express');
+const Joi = require('@hapi/joi');
+
 const app = express();
 const port = 3000;
 
@@ -64,6 +66,15 @@ app.post('/api/genres/', (req, res) => {
 	// Need to return the posted genre.
 	const genre = genres.find(genre => genre.title === req.body.title);
 	res.send(genre);
+});
+
+
+// PUT request
+app.put('/api/genres/:id', (req, res) => {
+	// For a put request, we are updating data on the server
+	// We need to specify the ID and the new title
+	// Use an array method to directly update this array 
+	res.send('PUT request sent');
 })
 
 
