@@ -52,6 +52,10 @@ app.get('/api/genres/:id', (req, res) => {
 app.post('/api/genres/', (req, res) => {
 	const newId = genres.length + 1; // Normally, the database creates this ID for you. This code could cause bugs in real life.
 	// Need a way to authenticate that the data was sent correctly
+	if (!req.body.title || req.body.title.length <= 3) {
+		res.send('Must specify title or have title be longer than 3 characters.');
+		return
+	}
 	genres.push({
 		"id": newId,
 		"title": req.body.title
