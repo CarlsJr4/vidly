@@ -11,7 +11,7 @@
 // Remember that some values might need to be parsed (i.e. parseInt(string));
 
 const express = require('express');
-const Joi = require('@hapi/joi');
+// const Joi = require('@hapi/joi');
 
 const app = express();
 const port = 3000;
@@ -71,10 +71,24 @@ app.post('/api/genres/', (req, res) => {
 
 // PUT request
 app.put('/api/genres/:id', (req, res) => {
-	// For a put request, we are updating data on the server
-	// We need to specify the ID and the new title
-	// Use an array method to directly update this array 
-	res.send('PUT request sent');
+	const id = req.params.id;
+	const genre = genres.find(genre => genre.id.toString() === id);
+
+	
+	if (!genre) {
+		res.status(404).send("Can't find the requested genre.")
+		return
+	}
+	
+	const updatedGenre = {
+		"id": req.params.id,
+		"title": req.body.title
+	}
+
+	const index = genres.indexOf(genre);
+	genres.splice(index, 1, updatedGenre);
+
+	res.send(genres[index]);
 })
 
 
