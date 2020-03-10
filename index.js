@@ -49,15 +49,17 @@ app.get('/api/genres/:id', (req, res) => {
 
 
 // POST request
-app.post('/api/genres/:id', (req, res) => {
-	// POST requests involve creating new genres
-	// We need to auto-generate an ID
-	// Then, we need the name of the genre to create
-	// How can we send a new genre name to the server?
+app.post('/api/genres/', (req, res) => {
 	const newId = genres.length + 1; // Normally, the database creates this ID for you. This code could cause bugs in real life.
-	console.log(req.body);
-	console.log(typeof req.body);
-	res.send('POST request sent.');
+	// Need a way to authenticate that the data was sent correctly
+	genres.push({
+		"id": newId,
+		"title": req.body.title
+	});
+
+	// Need to return the posted genre.
+	const genre = genres.find(genre => genre.title === req.body.title);
+	res.send(genre);
 })
 
 
