@@ -48,11 +48,13 @@ app.get('/api/genres/:id', (req, res) => {
 // POST request
 app.post('/api/genres/', (req, res) => {
 	const newId = genres.length + 1; 
+	// Need this to validate the sent title
 	const {error} = schema.validate(req.body);
 	if (error) {
 		res.send(`Error: ${error.details[0].message}`);
 		return
 	}
+
 	genres.push({
 		"id": newId,
 		"title": req.body.title
@@ -80,8 +82,9 @@ app.put('/api/genres/:id', (req, res) => {
 		"title": req.body.title
 	}
 
-	if (!req.body.title) {
-		res.status(400).send("You must include the title of the genre.")
+	const {error} = schema.validate(req.body);
+	if (error) {
+		res.send(`Error: ${error.details[0].message}`);
 		return
 	}
 
