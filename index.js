@@ -17,11 +17,16 @@ let genres = [
 	{"id": 5, "title": "Thriller"}
 ];
 
-const schema = Joi.object({
-	title: Joi.string()
-		.min(3)
-		.required()
-})
+
+function validateData(req) {
+	const schema = Joi.object({
+		title: Joi.string()
+			.min(3)
+			.required()
+	});
+
+	return schema.validate(req.body);
+}
 
 app.get('/', (req, res) => {
 	res.send('Welcome to vidly!');
@@ -49,11 +54,8 @@ app.get('/api/genres/:id', (req, res) => {
 app.post('/api/genres/', (req, res) => {
 	const newId = genres.length + 1; 
 	// Need this to validate the sent title
-	const {error} = schema.validate(req.body);
-	if (error) {
-		res.send(`Error: ${error.details[0].message}`);
-		return
-	}
+	const {error} = validateData(req);
+	if (error) return res.send(`Error: ${error.details[0].message}`);
 
 	genres.push({
 		"id": newId,
@@ -82,11 +84,8 @@ app.put('/api/genres/:id', (req, res) => {
 		"title": req.body.title
 	}
 
-	const {error} = schema.validate(req.body);
-	if (error) {
-		res.send(`Error: ${error.details[0].message}`);
-		return
-	}
+	const {error} = validateData(req);
+	if (error) return res.send(`Error: ${error.details[0].message}`);
 
 	const index = genres.indexOf(genre);
 	genres.splice(index, 1, updatedGenre);
@@ -97,15 +96,10 @@ app.put('/api/genres/:id', (req, res) => {
 
 // DELETE request
 app.delete('/api/genres/:id', (req, res) => {
-	// DELETE should be pretty straightforward
-	// Almost the same as PUT, but splice without replacing anything
 	const id = req.params.id;
 	const genre = genres.find(genre => genre.id.toString() === id);
 
-	if (!genre) {
-		res.status(404).send("Can't find the requested genre.")
-		return
-	}
+	if (!genre) return res.status(404).send("Can't find the requested genre.");
 
 	const index = genres.indexOf(genre);
 	genres.splice(index, 1);
