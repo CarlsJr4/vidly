@@ -1,5 +1,5 @@
 const express = require('express');
-// const Joi = require('@hapi/joi');
+const Joi = require('@hapi/joi');
 
 // FINAL STEP:
 // Refactor the code to be more DRY
@@ -16,6 +16,12 @@ let genres = [
 	{"id": 4, "title": "Romance"},
 	{"id": 5, "title": "Thriller"}
 ];
+
+const schema = Joi.object({
+	title: Joi.string()
+		.min(3)
+		.required()
+})
 
 app.get('/', (req, res) => {
 	res.send('Welcome to vidly!');
@@ -41,10 +47,10 @@ app.get('/api/genres/:id', (req, res) => {
 
 // POST request
 app.post('/api/genres/', (req, res) => {
-	const newId = genres.length + 1; // Normally, the database creates this ID for you. This code could cause bugs in real life.
-	// Need a way to authenticate that the data was sent correctly
-	if (!req.body.title || req.body.title.length <= 3) {
-		res.send('Must specify title or have title be longer than 3 characters.');
+	const newId = genres.length + 1; 
+	const {error} = schema.validate(req.body);
+	if (error) {
+		res.send(`Error: ${error.details[0].message}`);
 		return
 	}
 	genres.push({
