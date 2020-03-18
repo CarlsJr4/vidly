@@ -1,3 +1,5 @@
+// PROJECT: Refactor this app to utilize a local MongoDB server!
+
 const express = require('express');
 
 // To use the new routes, we first need to import the router
