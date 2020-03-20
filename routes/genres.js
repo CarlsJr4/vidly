@@ -27,7 +27,7 @@ const Genres = mongoose.model('Genre', genreSchema);
 // Genre.find({title: "Aliens"}, (err, arr) => {console.log(arr)});
 
 // Create a test document and save it to MongoDB
-// const genre = new Genre({title: "Aliens"});
+// const genre = new Genres({title: "Sci-Fi"});
 // genre.save().then(genre => {console.log(genre)});
 
 function validateData(req) {
@@ -40,7 +40,7 @@ function validateData(req) {
 	return schema.validate(req.body);
 }
 
-
+// Default GET route
 router.get('/', (req, res) => {
 	Genres.find((err, genres) => {
 		if (err) return console.error(err);
@@ -49,15 +49,14 @@ router.get('/', (req, res) => {
 	});
 });
 
+// GET specific genre by ID
 router.get('/:id', (req, res) => {
 	const id = req.params.id;
-	const genre = genres.find(genre => genre.id.toString() === id);
-	// Returns error and ends function if route doesnt exist
-	if (!genre) {
-		res.status(404).send('404 error. The genre you searched for does not exist.');
-		return
-	}
-	res.send(genre);
+	Genres.find({_id: id}, (err, data) => {
+		if (err) console.err(err);
+		console.log(data);
+		res.send(data);
+	});
 });
 
 
