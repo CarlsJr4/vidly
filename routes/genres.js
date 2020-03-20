@@ -1,81 +1,85 @@
 // This routes module acts like its own mini-express app with its own routes
-
-// Import mongoose
-const mongoose = require('mongoose');
-
 const express = require('express'); 
-const Joi = require('@hapi/joi');
 const router = express.Router();
+const mongoose = require('mongoose');
+const Joi = require('@hapi/joi');
 
-// Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/vidly', {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false});
+function validateData(req) {
+	const schema = Joi.object({
+		title: Joi.string()
+			.min(3)
+			.required()
+	});
 
-// Listen for successful connection or failure
-const db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', () => {console.log('Connected to vidly database...')});
-
-// Create a database schema (define data types)
-const genreSchema = new mongoose.Schema({
-	title: {
-		type: String,
-		required: true,
-		minlength: 3,
-		maxlength: 20
-	}
-});
+	return schema.validate(req.body);
+}
 
 // Compile your schema into a model where documents are derived from
-const Genres = mongoose.model('Genre', genreSchema);
-
+const Genres = mongoose.model('Genre', new mongoose.Schema({
+		title: {
+			type: String,
+			required: true,
+			minlength: 5,
+			maxlength: 50
+		}
+	})
+);
 
 // Default GET route
-router.get('/', (req, res) => {
-	Genres.find((err, genres) => {
-		if (err) return res.send(err);
+router.get('/', async (req, res) => {
+	const genres = await Genres.find().sort('name');
 		res.send(genres);
-	});
-});
-
+	}
+);
 
 // GET specific genre by ID
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
 	const id = req.params.id;
-	Genres.find({_id: id}, (err, data) => {
-		if (err) res.send(err);
-		res.send(data);
-	});
+	const genres = await Genres.find({_id: id});
+
+	if (!genres) return res.status(404).send('The genre with the given ID was not found.');
+
+	res.send(genres);
 });
 
 
 // POST request
-router.post('/', (req, res) => {
-	const newGenre = new Genres({title: req.body.title});
-	newGenre.save((err, data) => {
-		if (err) res.send(err);
-		res.send(data);
-	});
+router.post('/', async (req, res) => {
+	// This returns the actual document. We can call the variable to save to DB.
+	let newGenre = new Genres({title: req.body.title});
+	// This returns a fulfilled promise so we can send it to the client
+	newGenre = await newGenre.save();
+	res.send(newGenre);
 });
 
 
 // PUT request
-router.put('/:id', (req, res) => {
+router.put('/:id', async (req, res) => {
+	// We need to validate the data to send before sending it to the DB
+	const {error} = validateData(req.body);
+	if (error) return res.status(404).send(error.details[0].message);
+
 	const id = req.params.id;
-	Genres.findByIdAndUpdate(id, {title: req.body.title});
+	const genre = await Genres.findByIdAndUpdate(
+		id, 
+		{title: req.body.title},
+		{new: true}
+	);
+
+	if (!genre) return res.status(404).send('The genre with the given ID was not found.');
+
+	res.send(genre);
 });
 		
 
 // DELETE request
-router.delete('/:id', (req, res) => {
+router.delete('/:id', async(req, res) => {
 	const id = req.params.id;
-	const genre = genres.find(genre => genre.id.toString() === id);
+	const genre = await Genres.findByIdAndRemove(id);
 
-	if (!genre) return res.status(404).send("Can't find the requested genre.");
+	if (!genre) return res.status(404).send('The genre with the given ID was not found.');
 
-	const index = genres.indexOf(genre);
-	genres.splice(index, 1);
-
-	res.send(genres);
+	res.send(genre);
 });
 
 module.exports = router;
