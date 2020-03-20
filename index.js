@@ -1,6 +1,6 @@
-// PROJECT: Refactor this app to utilize a local MongoDB server!
 const express = require('express');
 const genres = require('./routes/genres');
+const customers = require('./routes/customers');
 
 // Import mongoose
 const mongoose = require('mongoose');
@@ -20,6 +20,7 @@ const port = 3000;
 // Middleware
 app.use(express.json());
 app.use('/api/genres', genres);
+app.use('/api/customers', customers);
 
 app.get('/', (req, res) => {
 	res.send('Welcome to vidly!');
