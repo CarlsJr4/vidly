@@ -17,7 +17,12 @@ db.once('open', () => {console.log('Connected to vidly database...')});
 
 // Create a database schema (define data types)
 const genreSchema = new mongoose.Schema({
-	title: String
+	title: {
+		type: String,
+		required: true,
+		minLength: 3,
+		maxLength: 20
+	}
 });
 
 // Compile your schema into a model where documents are derived from
