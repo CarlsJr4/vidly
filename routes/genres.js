@@ -7,7 +7,8 @@ const Joi = require('@hapi/joi');
 function validateData(req) {
 	const schema = Joi.object({
 		title: Joi.string()
-			.min(3)
+			.min(5)
+			.max(50)
 			.required()
 	});
 
@@ -62,20 +63,21 @@ router.post('/', async (req, res) => {
 
 // PUT request
 router.put('/:id', async (req, res) => {
-	// We need to validate the data to send before sending it to the DB
-	const {error} = validateData(req.body);
+	const {error} = validateData(req);
 	if (error) return res.status(404).send(error.details[0].message);
 
-	const id = req.params.id;
-	const genre = await Genres.findByIdAndUpdate(
-		id, 
-		{title: req.body.title},
-		{new: true}
-	);
-
-	if (!genre) return res.status(404).send('The genre with the given ID was not found.');
-
-	res.send(genre);
+	try {
+		const id = req.params.id;
+		const genre = await Genres.findByIdAndUpdate(
+			id, 
+			{title: req.body.title},
+			{new: true}
+		);
+		res.send(genre);
+	}
+	catch {
+		res.status(404).send('The genre with the given ID was not found');
+	}
 });
 		
 
