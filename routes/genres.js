@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const Joi = require('@hapi/joi');
+const putDebug = require('debug')('app:putDebug');
 
 function validateData(req) {
 	const schema = Joi.object({
@@ -11,6 +12,7 @@ function validateData(req) {
 			.max(50)
 			.required()
 	});
+	putDebug(req.body);
 
 	return schema.validate(req.body);
 }
