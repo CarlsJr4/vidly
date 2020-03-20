@@ -8,7 +8,7 @@ const Joi = require('@hapi/joi');
 const router = express.Router();
 
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/vidly', {useNewUrlParser: true, useUnifiedTopology: true});
+mongoose.connect('mongodb://localhost:27017/vidly', {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false});
 
 // Listen for successful connection or failure
 const db = mongoose.connection;
@@ -61,28 +61,9 @@ router.post('/', (req, res) => {
 // PUT request
 router.put('/:id', (req, res) => {
 	const id = req.params.id;
-	const genre = genres.find(genre => genre.id.toString() === id);
-
-	
-	if (!genre) {
-		res.status(404).send("Can't find the requested genre.")
-		return
-	}
-	
-	const updatedGenre = {
-		"id": req.params.id,
-		"title": req.body.title
-	}
-
-	const {error} = validateData(req);
-	if (error) return res.send(`Error: ${error.details[0].message}`);
-
-	const index = genres.indexOf(genre);
-	genres.splice(index, 1, updatedGenre);
-
-	res.send(genres[index]);
+	Genres.findByIdAndUpdate(id, {title: req.body.title});
 });
-
+		
 
 // DELETE request
 router.delete('/:id', (req, res) => {
