@@ -28,38 +28,21 @@ const genreSchema = new mongoose.Schema({
 // Compile your schema into a model where documents are derived from
 const Genres = mongoose.model('Genre', genreSchema);
 
-// Now, we need to create new documents using Mongoose's CRUD methods
-// Genre.find({title: "Aliens"}, (err, arr) => {console.log(arr)});
-
-// Create a test document and save it to MongoDB
-// const genre = new Genres({title: "Sci-Fi"});
-// genre.save().then(genre => {console.log(genre)});
-
-function validateData(req) {
-	const schema = Joi.object({
-		title: Joi.string()
-			.min(3)
-			.required()
-	});
-
-	return schema.validate(req.body);
-}
 
 // Default GET route
 router.get('/', (req, res) => {
 	Genres.find((err, genres) => {
 		if (err) return console.error(err);
-		console.log(genres);
 		res.send(genres);
 	});
 });
+
 
 // GET specific genre by ID
 router.get('/:id', (req, res) => {
 	const id = req.params.id;
 	Genres.find({_id: id}, (err, data) => {
 		if (err) console.err(err);
-		console.log(data);
 		res.send(data);
 	});
 });
@@ -67,19 +50,11 @@ router.get('/:id', (req, res) => {
 
 // POST request
 router.post('/', (req, res) => {
-	const newId = genres.length + 1; 
-	// Need this to validate the sent title
-	const {error} = validateData(req);
-	if (error) return res.send(`Error: ${error.details[0].message}`);
-
-	genres.push({
-		"id": newId,
-		"title": req.body.title
+	const newGenre = new Genres({title: req.body.title});
+	newGenre.save((err, data) => {
+		if (err) console.err(err);
+		res.send(data);
 	});
-
-	// Need to return the posted genre.
-	const genre = genres.find(genre => genre.title === req.body.title);
-	res.send(genre);
 });
 
 
