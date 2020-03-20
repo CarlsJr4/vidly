@@ -1,19 +1,34 @@
 // This routes module acts like its own mini-express app with its own routes
 
+// Import mongoose
+const mongoose = require('mongoose');
+
 const express = require('express'); 
 const Joi = require('@hapi/joi');
-
-// Create a new instance of an express router object
-// calling express.Router() returns a function?
 const router = express.Router();
 
-let genres = [
-	{"id": 1, "title": "Horror"},
-	{"id": 2, "title": "Action"},
-	{"id": 3, "title": "Sci-Fi"},
-	{"id": 4, "title": "Romance"},
-	{"id": 5, "title": "Thriller"}
-];
+// Connect to MongoDB
+mongoose.connect('mongodb://localhost:27017/vidly', {useNewUrlParser: true, useUnifiedTopology: true});
+
+// Listen for successful connection or failure
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', () => {console.log('Connected to vidly database...')});
+
+// Create a database schema (define data types)
+const genreSchema = new mongoose.Schema({
+	title: String
+});
+
+// Compile your schema into a model where documents are derived from
+const Genres = mongoose.model('Genre', genreSchema);
+
+// Now, we need to create new documents using Mongoose's CRUD methods
+// Genre.find({title: "Aliens"}, (err, arr) => {console.log(arr)});
+
+// Create a test document and save it to MongoDB
+// const genre = new Genre({title: "Aliens"});
+// genre.save().then(genre => {console.log(genre)});
 
 function validateData(req) {
 	const schema = Joi.object({
@@ -25,10 +40,14 @@ function validateData(req) {
 	return schema.validate(req.body);
 }
 
-router.get('/', (req, res) => {
-	res.send(genres);
-});
 
+router.get('/', (req, res) => {
+	Genres.find((err, genres) => {
+		if (err) return console.error(err);
+		console.log(genres);
+		res.send(genres);
+	});
+});
 
 router.get('/:id', (req, res) => {
 	const id = req.params.id;
