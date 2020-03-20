@@ -32,7 +32,7 @@ const Genres = mongoose.model('Genre', genreSchema);
 // Default GET route
 router.get('/', (req, res) => {
 	Genres.find((err, genres) => {
-		if (err) return console.error(err);
+		if (err) return res.send(err);
 		res.send(genres);
 	});
 });
@@ -42,7 +42,7 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
 	const id = req.params.id;
 	Genres.find({_id: id}, (err, data) => {
-		if (err) console.error(err);
+		if (err) res.send(err);
 		res.send(data);
 	});
 });
@@ -52,7 +52,7 @@ router.get('/:id', (req, res) => {
 router.post('/', (req, res) => {
 	const newGenre = new Genres({title: req.body.title});
 	newGenre.save((err, data) => {
-		if (err) console.error(err);
+		if (err) res.send(err);
 		res.send(data);
 	});
 });
