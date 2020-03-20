@@ -20,8 +20,8 @@ const genreSchema = new mongoose.Schema({
 	title: {
 		type: String,
 		required: true,
-		minLength: 3,
-		maxLength: 20
+		minlength: 3,
+		maxlength: 20
 	}
 });
 
@@ -42,7 +42,7 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
 	const id = req.params.id;
 	Genres.find({_id: id}, (err, data) => {
-		if (err) console.err(err);
+		if (err) console.error(err);
 		res.send(data);
 	});
 });
@@ -52,7 +52,7 @@ router.get('/:id', (req, res) => {
 router.post('/', (req, res) => {
 	const newGenre = new Genres({title: req.body.title});
 	newGenre.save((err, data) => {
-		if (err) console.err(err);
+		if (err) console.error(err);
 		res.send(data);
 	});
 });
