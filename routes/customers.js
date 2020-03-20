@@ -7,11 +7,23 @@ const mongoose = require('mongoose');
 const router = express.Router();
 
 // Schema and model
+// We need database validation!
 const Customers = mongoose.model('Customer', 
 	new mongoose.Schema({
-		isGold: Boolean,
-		name: String, 
-		phone: String
+		isGold: {
+			type: Boolean,
+			required: true
+		},
+		name: {
+			type: String,
+			minlength: 2,
+			maxlength: 20,
+			required: true
+		}, 
+		phone: {
+			type: String,
+			required: true
+		}
 	})
 );
 
@@ -28,14 +40,18 @@ router.get('/:id', (req, res) => {
 // POST request
 router.post('/', async (req, res) => {
 	// To save to DB we need a new instance of the model
-	const customer = new Customers({
-		name: req.body.name, 
-		phone: req.body.phone,
-		isGold: req.body.isGold
-	});
-	// Returns a promise
-	const savedCustomer = await customer.save();
-	res.send(savedCustomer);
+	try {
+		const customer = new Customers({
+			name: req.body.name, 
+			phone: req.body.phone,
+			isGold: req.body.isGold
+		});
+		const savedCustomer = await customer.save();
+		res.send(savedCustomer);
+	} 
+	catch (err) {
+		res.send(err);
+	}
 });
 
 // PUT request
