@@ -1,36 +1,11 @@
 // This routes module acts like its own mini-express app with its own routes
 const express = require('express'); 
 const router = express.Router();
-const mongoose = require('mongoose');
-const Joi = require('@hapi/joi');
-const putDebug = require('debug')('app:putDebug');
-
-function validateData(req) {
-	const schema = Joi.object({
-		title: Joi.string()
-			.min(5)
-			.max(50)
-			.required()
-	});
-	putDebug(req.body);
-
-	return schema.validate(req.body);
-}
-
-// Compile your schema into a model where documents are derived from
-const Genres = mongoose.model('Genre', new mongoose.Schema({
-		title: {
-			type: String,
-			required: true,
-			minlength: 5,
-			maxlength: 50
-		}
-	})
-);
+const {genres, validateData} = require('../models/genre');
 
 // Default GET route
 router.get('/', async (req, res) => {
-	const genres = await Genres.find().sort('name');
+	const genres = await genres.find().sort('name');
 	res.send(genres);
 	}
 );
@@ -39,7 +14,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
 	const id = req.params.id;
 	try {
-		const genres = await Genres.find({_id: id});
+		const genres = await genres.find({_id: id});
 		res.send(genres);
 	}
 	catch {
@@ -52,7 +27,7 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
 	// This returns the actual document. We can call the variable to save to DB.
 	try {
-		let newGenre = new Genres({title: req.body.title});
+		let newGenre = new genres({title: req.body.title});
 		// This returns a fulfilled promise so we can send it to the client
 		newGenre = await newGenre.save();
 		res.send(newGenre);
@@ -70,7 +45,7 @@ router.put('/:id', async (req, res) => {
 
 	try {
 		const id = req.params.id;
-		const genre = await Genres.findByIdAndUpdate(
+		const genre = await genres.findByIdAndUpdate(
 			id, 
 			{title: req.body.title},
 			{new: true}
@@ -87,7 +62,7 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
 	try {
 		const id = req.params.id;
-		const genre = await Genres.findByIdAndRemove(id);
+		const genre = await genres.findByIdAndRemove(id);
 		res.send(genre);
 	}
 	catch {
