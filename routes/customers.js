@@ -1,9 +1,10 @@
-// Build the customers API
 const express = require('express');
 const mongoose = require('mongoose');
 const Joi = require('@hapi/joi');
 
+
 const router = express.Router();
+
 
 // Schema and model
 const Customers = mongoose.model('Customer', 
@@ -25,38 +26,50 @@ const Customers = mongoose.model('Customer',
 	})
 );
 
+
 // PUT and POST validation
 function validateData(customer) {
 	const schema = Joi.object({
-		name: Joi.string()
+		name: Joi
+			.string()
 			.min(2)
 			.max(50)
 			.required(),
-		phone: Joi.string()
+		phone: Joi
+			.string()
 			.required(),
-		isGold: Joi.boolean()
+		isGold: Joi
+			.boolean()
 	});
 
 	return schema.validate(customer.body);
 }
 
-//  Route: vidly/api/customers. Need to build the routes for this.
+
+// Default GET route
 router.get('/', async (req, res) => {
 	const customers = await Customers.find();
 	res.send(customers);
 });
 
+
 //  Search for customer by ID
 router.get('/:id', async (req, res) => {
 	const id = req.params.id;
+	// Define customer here so the try catch block can read it
+	let customer
+
 	try {
-		const customer = await Customers.find({_id: id});
-		res.send(customer);
+	customer = await Customers.find({_id: id});
 	}
-	catch {
-		res.send(`Could not find customer with id ${id}`)
+	catch (err) {
+		if (!customer) return res.status(404).send(`Customer with ID ${id} was not found.`);
+		res.send(err);
 	}
+
+	res.send(customer);
 });
+
 
 // POST request
 router.post('/', async (req, res) => {
@@ -64,27 +77,29 @@ router.post('/', async (req, res) => {
 	const { error } = validateData(req);
 	if (error) return res.status(400).send(error.details[0].message);
 
-	const customer = new Customers({
+	let customer = new Customers({
 		name: req.body.name, 
 		phone: req.body.phone,
 		isGold: req.body.isGold
 	});
 
-	const savedCustomer = await customer.save();
-	res.send(savedCustomer);
+	customer = await customer.save();
+	res.send(customer);
 });
+
 
 // PUT request
 router.put('/:id', async (req, res) => {
 	const id = req.params.id;
+	// Initialize variable here so try/catch blocks can access it
+	let updatedCustomer;
+
+	// Initial request validation
 	const { error } = validateData(req);
 	if (error) return res.status(400).send(error.details[0].message);
 
 	try {
-		// Returns a query object
-		let updatedCustomer = await Customers.findByIdAndUpdate(id, {
-			// Will this only update the fields we want to update?
-			// We could use the || operator incase the field doesn't exist?
+		updatedCustomer = await Customers.findByIdAndUpdate(id, {
 			name: req.body.name,
 			phone: req.body.phone,
 			isGold: req.body.isGold
@@ -93,19 +108,22 @@ router.put('/:id', async (req, res) => {
 		res.send(updatedCustomer);
 	}
 	catch (err) {
+		if (!updatedCustomer) return res.status(404).send(`Customer with ID ${id} was not found`);
 		res.send(err)
 	}
 });
 
+
 // DELETE request 
 router.delete('/:id', async (req, res) => {
+	let customer;
+	const id = req.params.id;
 	try {
-		const id = req.params.id;
-		const customer = await Customers.findByIdAndRemove(id);
+		customer = await Customers.findByIdAndRemove(id);
 		res.send(customer);
 	}
-	catch {
-		res.status(404).send('The customer with the given ID was not found.');
+	catch (err) {
+		if (!customer) return res.status(404).send(`The customer with the ID ${id} was not found.`);
 	}
 });
 
