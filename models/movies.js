@@ -9,3 +9,29 @@
 // Task: Build an API to manage the list of movies
 // Do all the CRUD stuff
 // Feel free to copy/paste from your other files 
+
+const mongoose = require('mongoose');
+const { genres } = require('./genre');
+
+const Movies = mongoose.model('Movie', new mongoose.Schema({
+	title: {
+		type: String,
+		required: true,
+	},
+	genre: {
+		type: genres,
+		required: true
+	},
+	numberInStock: {
+		type: Number,
+		required: true,
+	},
+	dailyRentalRate: {
+		type: Number,
+		required: true
+	}
+}));
+
+module.exports = {
+	movies: Movies
+}
