@@ -54,18 +54,25 @@ router.post('/', async (req, res) => {
 
 // PUT request
 router.put('/:id', async (req, res) => {
+	// In this route, we can even update the genre of the movie
 	const id = req.params.id;
-	// Initialize variable here so try/catch blocks can access it
 	let updatedMovie;
 
-	// Initial request validation
+	// Check if data is in correct format
 	const { error } = validateMovie(req);
 	if (error) return res.status(400).send(error.details[0].message);
+
+	// Check if the genre exists in the database
+	const genre = await genres.findById(req.body.genreId);
+	if (!genre) res.status(400).send('The genre you want to update to does not exist.')
 
 	try {
 		updatedMovie = await movies.findByIdAndUpdate(id, {
 			title: req.body.title, 
-			genre: new genres({ title: req.body.genre }), 
+			genre: {
+				_id: genre._id,
+				title: genre.title
+			}, 
 			numberInStock: req.body.numberInStock,
 			dailyRentalRate: req.body.dailyRentalRate
 		},
