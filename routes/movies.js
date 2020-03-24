@@ -1,11 +1,12 @@
 const express = require('express');
-const {movies, validateMovie} = require('../models/movies');
+const { movies, validateMovie } = require('../models/movies');
+const { genres } = require('../models/genre');
 const router = express.Router();
 
 // Default GET route
 router.get('/', async (req, res) => {
-	const customers = await movies.find();
-	res.send(customers);
+	const allMovies = await movies.find();
+	res.send(allMovies);
 });
 
 
@@ -29,14 +30,14 @@ router.get('/:id', async (req, res) => {
 
 // POST request
 router.post('/', async (req, res) => {
-	// Here, we are letting Joi handle our errors
 	const { error } = validateMovie(req);
 	if (error) return res.status(400).send(error.details[0].message);
 
 	let movies = new movies({
-		name: req.body.name, 
-		phone: req.body.phone,
-		isGold: req.body.isGold
+		title: req.body.title, 
+		genre: new genres({ title: req.body.genre}), 
+		numberInStock: req.body.numberInStock,
+		dailyRentalRate: req.body.dailyRentalRate
 	});
 
 	movies = await movies.save();
