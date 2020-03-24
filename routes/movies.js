@@ -20,7 +20,7 @@ router.get('/:id', async (req, res) => {
 	movies = await movies.find({_id: id});
 	}
 	catch (err) {
-		if (!movies) return res.status(404).send(`Customer with ID ${id} was not found.`);
+		if (!movies) return res.status(404).send(`The movie with ID ${id} was not found.`);
 		res.send(err);
 	}
 
@@ -35,7 +35,7 @@ router.post('/', async (req, res) => {
 
 	let movies = new movies({
 		title: req.body.title, 
-		genre: new genres({ title: req.body.genre}), 
+		genre: new genres({ title: req.body.genre }), // Create a new instance of the model as a subdocument 
 		numberInStock: req.body.numberInStock,
 		dailyRentalRate: req.body.dailyRentalRate
 	});
@@ -65,7 +65,7 @@ router.put('/:id', async (req, res) => {
 		res.send(updatedCustomer);
 	}
 	catch (err) {
-		if (!updatedCustomer) return res.status(404).send(`Customer with ID ${id} was not found`);
+		if (!updatedCustomer) return res.status(404).send(`The movie with ID ${id} was not found`);
 		res.send(err)
 	}
 });
@@ -80,7 +80,7 @@ router.delete('/:id', async (req, res) => {
 		res.send(movies);
 	}
 	catch (err) {
-		if (!movies) return res.status(404).send(`The customer with the ID ${id} was not found.`);
+		if (!movies) return res.status(404).send(`The movie with the ID ${id} was not found.`);
 	}
 });
 
