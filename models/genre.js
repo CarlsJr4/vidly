@@ -2,15 +2,16 @@ const mongoose = require('mongoose');
 const Joi = require('@hapi/joi');
 const putDebug = require('debug')('app:putDebug');
 
-const Genres = mongoose.model('Genre', new mongoose.Schema({
+const genreSchema = new mongoose.Schema({
 	title: {
 		type: String,
 		required: true,
 		minlength: 5,
 		maxlength: 50
 	}
-})
-);
+});
+
+const Genres = mongoose.model('Genre', genreSchema);
 
 function validateData(req) {
 	const schema = Joi.object({
@@ -26,5 +27,6 @@ function validateData(req) {
 
 module.exports = {
 	genres: Genres,
+	genreSchema,
 	validateData
 }

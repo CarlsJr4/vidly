@@ -33,15 +33,17 @@ router.post('/', async (req, res) => {
 	const { error } = validateMovie(req);
 	if (error) return res.status(400).send(error.details[0].message);
 
-	let movies = new movies({
+	// Work on this part tomorrow!
+	// POST request is not working
+	let movie = new movies({
 		title: req.body.title, 
 		genre: new genres({ title: req.body.genre }), // Create a new instance of the model as a subdocument 
 		numberInStock: req.body.numberInStock,
 		dailyRentalRate: req.body.dailyRentalRate
 	});
 
-	movies = await movies.save();
-	res.send(movies);
+	movie = await movie.save();
+	res.send(movie);
 });
 
 
