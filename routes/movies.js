@@ -51,23 +51,24 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
 	const id = req.params.id;
 	// Initialize variable here so try/catch blocks can access it
-	let updatedCustomer;
+	let updatedMovie;
 
 	// Initial request validation
 	const { error } = validateMovie(req);
 	if (error) return res.status(400).send(error.details[0].message);
 
 	try {
-		updatedCustomer = await movies.findByIdAndUpdate(id, {
-			name: req.body.name,
-			phone: req.body.phone,
-			isGold: req.body.isGold
+		updatedMovie = await movies.findByIdAndUpdate(id, {
+			title: req.body.title, 
+			genre: new genres({ title: req.body.genre }), 
+			numberInStock: req.body.numberInStock,
+			dailyRentalRate: req.body.dailyRentalRate
 		},
 		{new: true});
-		res.send(updatedCustomer);
+		res.send(updatedMovie);
 	}
 	catch (err) {
-		if (!updatedCustomer) return res.status(404).send(`The movie with ID ${id} was not found`);
+		if (!updatedMovie) return res.status(404).send(`The movie with ID ${id} was not found`);
 		res.send(err)
 	}
 });
@@ -75,14 +76,14 @@ router.put('/:id', async (req, res) => {
 
 // DELETE request 
 router.delete('/:id', async (req, res) => {
-	let movies;
+	let movie;
 	const id = req.params.id;
 	try {
-		movies = await movies.findByIdAndRemove(id);
-		res.send(movies);
+		movie = await movies.findByIdAndRemove(id);
+		res.send(movie);
 	}
 	catch (err) {
-		if (!movies) return res.status(404).send(`The movie with the ID ${id} was not found.`);
+		if (!movie) return res.status(404).send(`The movie with the ID ${id} was not found.`);
 	}
 });
 
