@@ -32,10 +32,15 @@ router.get('/:id', async (req, res) => {
 router.post('/', async (req, res) => {
 	const { error } = validateMovie(req);
 	if (error) return res.status(400).send(error.details[0].message);
+	let genre;
 
 	// So we can ensure that the client sends a valid genre ID
-	const genre = await genres.findById(req.body.genreId); // Returns the requested document
-	if (!genre) return res.status(400).send('Invalid genre.')
+	try {
+		genre = await genres.findById(req.body.genreId);
+	}
+	catch {
+		if (!genre) return res.status(400).send('Invalid genre.')
+	}
 
 	let movie = new movies({
 		title: req.body.title, 
@@ -57,14 +62,19 @@ router.put('/:id', async (req, res) => {
 	// In this route, we can even update the genre of the movie
 	const id = req.params.id;
 	let updatedMovie;
+	let genre
 
 	// Check if data is in correct format
 	const { error } = validateMovie(req);
 	if (error) return res.status(400).send(error.details[0].message);
 
 	// Check if the genre exists in the database
-	const genre = await genres.findById(req.body.genreId);
-	if (!genre) res.status(400).send('The genre you want to update to does not exist.')
+	try {
+		genre = await genres.findById(req.body.genreId);
+	}
+	catch {
+		if (!genre) return res.status(400).send('The genre you want to update to does not exist.')
+	}
 
 	try {
 		updatedMovie = await movies.findByIdAndUpdate(id, {
