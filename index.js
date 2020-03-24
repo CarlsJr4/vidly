@@ -1,6 +1,7 @@
 const express = require('express');
 const genres = require('./routes/genres');
 const customers = require('./routes/customers');
+const movies = require('./routes/movies');
 
 // Import mongoose
 const mongoose = require('mongoose');
@@ -21,6 +22,7 @@ const port = 3000;
 app.use(express.json());
 app.use('/api/genres', genres);
 app.use('/api/customers', customers);
+app.use('/api/movies', movies);
 
 app.get('/', (req, res) => {
 	res.send('Welcome to vidly!');
