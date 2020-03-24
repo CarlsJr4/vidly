@@ -32,15 +32,16 @@ function validateMovie(req) {
 const Movies = mongoose.model('Movie', new mongoose.Schema({
 	title: {
 		type: String,
-		required: true,
+		required: true
 	},
 	genre: {
-		type: genres,
+		type: mongoose.Types.ObjectId,
+		ref: genres,
 		required: true
 	},
 	numberInStock: {
 		type: Number,
-		required: true,
+		required: true
 	},
 	dailyRentalRate: {
 		type: Number,
