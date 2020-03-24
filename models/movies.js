@@ -20,9 +20,13 @@ function validateMovie(req) {
 			.required(),
 		numberInStock: Joi
 			.number()
+			.min(0)
+			.max(255)
 			.required(),
 		dailyRentalRate: Joi
 			.number()
+			.min(0)
+			.max(255)
 			.required()
 	});
 
@@ -32,16 +36,24 @@ function validateMovie(req) {
 const Movies = mongoose.model('Movie', new mongoose.Schema({
 	title: {
 		type: String,
+		trim: true,
 		required: true
 	},
-	genre: genreSchema,
+	genre: {
+		type: genreSchema,
+		required: true
+	},
 	numberInStock: {
 		type: Number,
-		required: true
+		required: true,
+		min: 0,
+		max: 255
 	},
 	dailyRentalRate: {
 		type: Number,
-		required: true
+		required: true,
+		min: 0,
+		max: 255
 	}
 }));
 
