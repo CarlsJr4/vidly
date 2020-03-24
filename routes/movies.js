@@ -33,11 +33,16 @@ router.post('/', async (req, res) => {
 	const { error } = validateMovie(req);
 	if (error) return res.status(400).send(error.details[0].message);
 
-	// Work on this part tomorrow!
-	// POST request is not working
+	// So we can ensure that the client sends a valid genre ID
+	const genre = await genres.findById(req.body.genreId); // Returns the requested document
+	if (!genre) return res.status(400).send('Invalid genre.')
+
 	let movie = new movies({
 		title: req.body.title, 
-		genre: new genres({ title: req.body.genre }), // Create a new instance of the model as a subdocument 
+		genre: {
+			_id: genre._id,
+			title: genre.title
+		}, 
 		numberInStock: req.body.numberInStock,
 		dailyRentalRate: req.body.dailyRentalRate
 	});
