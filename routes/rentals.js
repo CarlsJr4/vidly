@@ -40,12 +40,15 @@ router.post('/', async (req, res) => {
 		customer: retrievedCustomer, 
 	});
 
-	rental = await rental.save();
-
 	// Need to update other documents to reflect changes from renting
-	retrievedMovie.numberInStock-- 
-	retrievedMovie.save();
+	try {
+		retrievedMovie.numberInStock-- 
+		await retrievedMovie.save()
+	} catch {
+		return res.status(400).send('The requested movie is out of stock.')
+	};
 
+	rental = await rental.save();
 	res.send(rental);
 });
 
