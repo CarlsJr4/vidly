@@ -43,6 +43,6 @@ const Rentals = mongoose.model('Rental', new mongoose.Schema({
 }));
 
 module.exports = {
-	movies: Movies,
+	rentals: Rentals,
 	validateRental
 }
