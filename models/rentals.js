@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const Joi = require('@hapi/joi');
+const { customerSchema } = require('../models/customer');
 
 function validateRental(req) {
 	const schema = Joi.object({
