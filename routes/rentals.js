@@ -6,7 +6,9 @@ const router = express.Router();
 
 // Default GET route
 router.get('/', async (req, res) => {
-	const allRentals = await rentals.find();
+	const allRentals = await rentals
+		.find()
+		.sort('timeOfRental');
 	res.send(allRentals);
 });
 
@@ -22,12 +24,21 @@ router.post('/', async (req, res) => {
 		retrievedCustomer = await customer.findById(req.body.customerId);
 	}
 	catch {
-		if (!retrievedCustomer || !retrievedMovie) return res.status(400).send('Invalid ID.')
+		if (!retrievedCustomer) {
+			return res.status(400).send('Invalid customer ID.')
+		} else {
+			return res.status(400).send('Invalid movie ID.')
+		}
 	}
 
 	// How to make it so that we can selectively populate whichever properties we want?
+	// We have to design a simpler customer schema to override the default one
 	let rental = new rentals({
-		movie: retrievedMovie,
+		movie: {
+			_id: retrievedMovie._id,
+			title: retrievedMovie.title,
+			dailyRentalRate: retrievedMovie.dailyRentalRate
+		},
 		customer: retrievedCustomer, 
 	});
 
