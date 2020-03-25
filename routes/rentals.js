@@ -1,45 +1,43 @@
-// TASK: Build 2 endpoints
-// POST /api/rentals
-// GET /api/rentals
-
 const express = require('express');
-const { movies, validateMovie } = require('../models/movies');
-const { genres } = require('../models/genre');
+const { rentals, validateRental } = require('../models/movies');
+const { customer } = require('../models/customer');
+const { movies } = require('../models/movies');
 const router = express.Router();
 
 // Default GET route
 router.get('/', async (req, res) => {
-	const allMovies = await movies.find();
-	res.send(allMovies);
+	const allRentals = await rentals.find();
+	res.send(allRentals);
 });
 
 
 // POST request
 router.post('/', async (req, res) => {
-	const { error } = validateMovie(req);
+	const { error } = validateRental(req);
 	if (error) return res.status(400).send(error.details[0].message);
-	let genre;
+	let retrievedMovie, retrievedCustomer;
 
-	// So we can ensure that the client sends a valid genre ID
 	try {
-		genre = await genres.findById(req.body.genreId);
+		retrievedMovie = await movies.findById(req.body.movieId);
+		retrievedCustomer = await customer.findById(req.body.customerId);
 	}
 	catch {
-		if (!genre) return res.status(400).send('Invalid genre.')
+		if (!retrievedCustomer || !retrievedMovie) return res.status(400).send('Invalid ID.')
 	}
 
-	let movie = new movies({
-		title: req.body.title, 
-		genre: {
-			_id: genre._id,
-			title: genre.title
+	let rental = new rentals({
+		movie: {
+			_id: retrievedMovie._id,
+			title: retrievedMovie.title
+		},
+		customer: {
+			_id: rental._id,
+			title: rental.title
 		}, 
-		numberInStock: req.body.numberInStock,
-		dailyRentalRate: req.body.dailyRentalRate
 	});
 
-	movie = await movie.save();
-	res.send(movie);
+	rental = await rental.save();
+	res.send(rental);
 });
 
 

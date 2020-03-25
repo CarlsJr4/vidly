@@ -1,15 +1,7 @@
-// Task: Create a POST and GET request for rentals
-
-// What will we need in a rental document?
-// Movie title - Need movie title schema
-// Customer that is renting - Need customer name schema
-// Timestamp of rental
-
 const mongoose = require('mongoose');
 const Joi = require('@hapi/joi');
-const { movieSchema } = require('../models/movies'); // Once we have the movie, we can fill in its subdocuments
+const { movieSchema } = require('../models/movies'); 
 const { customerSchema } = require('../models/customer');
-
 
 function validateRental(req) {
 	const schema = Joi.object({
@@ -23,16 +15,15 @@ function validateRental(req) {
 			.string()
 			.required()
 	});
-
 	return schema.validate(req.body)
 };
 
 const Rentals = mongoose.model('Rental', new mongoose.Schema({
-	movieId: {
+	movie: {
 		type: movieSchema,
 		required: true
 	},
-	customerId: {
+	customer: {
 		type: customerSchema,
 		required: true
 	},
