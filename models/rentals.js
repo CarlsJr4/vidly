@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
 const Joi = require('@hapi/joi');
-const { movieSchema } = require('../models/movies'); 
-const { customerSchema } = require('../models/customer');
 
 function validateRental(req) {
 	const schema = Joi.object({
@@ -17,7 +15,19 @@ function validateRental(req) {
 
 const Rentals = mongoose.model('Rental', new mongoose.Schema({
 	movie: {
-		type: movieSchema,
+		type: new mongoose.Schema({
+			title: {
+				type: String,
+				trim: true,
+				required: true
+			},
+			dailyRentalRate: {
+				type: Number,
+				required: true,
+				min: 0,
+				max: 255
+			}
+		}),
 		required: true
 	},
 	customer: {
@@ -27,6 +37,9 @@ const Rentals = mongoose.model('Rental', new mongoose.Schema({
 	timeOfRental: {
 		type: Date,
 		default: Date.now()
+	},
+	dateReturned: {
+		type: Date
 	}
 }));
 
