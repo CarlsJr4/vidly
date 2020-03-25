@@ -31,8 +31,6 @@ router.post('/', async (req, res) => {
 		}
 	}
 
-	// How to make it so that we can selectively populate whichever properties we want?
-	// We have to design a simpler customer schema to override the default one
 	let rental = new rentals({
 		movie: {
 			_id: retrievedMovie._id,
@@ -43,6 +41,11 @@ router.post('/', async (req, res) => {
 	});
 
 	rental = await rental.save();
+
+	// Need to update other documents to reflect changes from renting
+	retrievedMovie.numberInStock-- 
+	retrievedMovie.save();
+
 	res.send(rental);
 });
 
