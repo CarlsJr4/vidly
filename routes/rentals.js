@@ -1,8 +1,12 @@
 const express = require('express');
 const { rentals, validateRental } = require('../models/rentals');
+const Fawn = require('fawn');
+const mongoose = require('mongoose');
 const { customer } = require('../models/customer');
 const { movies } = require('../models/movies');
 const router = express.Router();
+
+Fawn.init(mongoose);
 
 // Default GET route
 router.get('/', async (req, res) => {
@@ -40,16 +44,19 @@ router.post('/', async (req, res) => {
 		customer: retrievedCustomer, 
 	});
 
-	// Need to update other documents to reflect changes from renting
 	try {
-		retrievedMovie.numberInStock-- 
-		await retrievedMovie.save()
-	} catch {
-		return res.status(400).send('The requested movie is out of stock.')
-	};
+		new Fawn.Task()
+			.save('rentals', rental)
+			.update('movies', {_id: retrievedMovie._id}, {
+				$inc: { numberInStock: -1 }
+			})
+			.run();
+			
+			res.send(rental);
+	} catch(ex) {
+		res.status(500).send('Internal server error.')
+	}
 
-	rental = await rental.save();
-	res.send(rental);
 });
 
 
