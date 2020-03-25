@@ -1,7 +1,3 @@
-// Task: Build an API to manage the list of movies
-// Do all the CRUD stuff
-// Feel free to copy/paste from your other files 
-
 const mongoose = require('mongoose');
 const Joi = require('@hapi/joi');
 const { genreSchema } = require('./genre');
@@ -31,7 +27,7 @@ function validateMovie(req) {
 	return schema.validate(req.body)
 };
 
-const Movies = mongoose.model('Movie', new mongoose.Schema({
+const movieSchema = new mongoose.Schema({
 	title: {
 		type: String,
 		trim: true,
@@ -53,9 +49,12 @@ const Movies = mongoose.model('Movie', new mongoose.Schema({
 		min: 0,
 		max: 255
 	}
-}));
+})
+
+const Movies = mongoose.model('Movie', movieSchema);
 
 module.exports = {
 	movies: Movies,
+	movieSchema,
 	validateMovie
 }

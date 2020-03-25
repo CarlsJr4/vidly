@@ -1,25 +1,25 @@
 const mongoose = require('mongoose');
 const Joi = require('@hapi/joi');
 
-// Schema and model
-const Customers = mongoose.model('Customer', 
-	new mongoose.Schema({
-		isGold: {
-			type: Boolean,
-			default: false
-		},
-		name: {
-			type: String,
-			minlength: 2,
-			maxlength: 50,
-			required: true
-		}, 
-		phone: {
-			type: String,
-			required: true
-		}
-	})
-);
+
+const customerSchema = new mongoose.Schema({
+	isGold: {
+		type: Boolean,
+		default: false
+	},
+	name: {
+		type: String,
+		minlength: 2,
+		maxlength: 50,
+		required: true
+	}, 
+	phone: {
+		type: String,
+		required: true
+	}
+});
+
+const Customers = mongoose.model('Customer', customerSchema);
 
 // PUT and POST validation
 function validateData(customer) {
@@ -40,5 +40,6 @@ function validateData(customer) {
 
 module.exports = {
 	customer: Customers,
+	customerSchema,
 	validateData
 }
