@@ -5,13 +5,10 @@ const { customerSchema } = require('../models/customer');
 
 function validateRental(req) {
 	const schema = Joi.object({
-		rentalId: Joi
+		movieId: Joi
 			.string()
 			.required(),
 		customerId: Joi
-			.string()
-			.required(),
-		timeOfRental: Joi
 			.string()
 			.required()
 	});

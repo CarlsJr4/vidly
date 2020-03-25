@@ -1,5 +1,5 @@
 const express = require('express');
-const { rentals, validateRental } = require('../models/movies');
+const { rentals, validateRental } = require('../models/rentals');
 const { customer } = require('../models/customer');
 const { movies } = require('../models/movies');
 const router = express.Router();
@@ -25,15 +25,10 @@ router.post('/', async (req, res) => {
 		if (!retrievedCustomer || !retrievedMovie) return res.status(400).send('Invalid ID.')
 	}
 
+	// How to make it so that we can selectively populate whichever properties we want?
 	let rental = new rentals({
-		movie: {
-			_id: retrievedMovie._id,
-			title: retrievedMovie.title
-		},
-		customer: {
-			_id: rental._id,
-			title: rental.title
-		}, 
+		movie: retrievedMovie,
+		customer: retrievedCustomer, 
 	});
 
 	rental = await rental.save();
