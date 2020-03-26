@@ -44,6 +44,8 @@ router.post('/', async (req, res) => {
 		customer: retrievedCustomer, 
 	});
 
+	// Why can I decrement number in stock despite having validation that prevents stock to be less than 0?
+	// Maybe focus on this later and just do the tuts
 	try {
 		new Fawn.Task()
 			.save('rentals', rental)
