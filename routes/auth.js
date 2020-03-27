@@ -1,9 +1,11 @@
+const jwt = require('jsonwebtoken');
 const express = require('express');
 const router = express.Router();
 const {users} = require('../models/users');
 const Joi = require('@hapi/joi');
 const bcrypt = require('bcrypt');
 const _ = require('lodash');
+const config = require('config');
 
 router.post('/', async (req, res) => {
 	// Validate the submitted user object
@@ -17,7 +19,10 @@ router.post('/', async (req, res) => {
 	const validPassword = await bcrypt.compare(req.body.password, user.password);
 	if (!validPassword) return res.status(400).send('Invalid email or password');
 
-	res.send(true);
+	// Generate a JSON web token
+	const token = jwt.sign({ _id: user._id }, config.get('jwtPrivateKey'));
+
+	res.send(token);
 });
 
 function validate(req) {

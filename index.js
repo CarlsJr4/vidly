@@ -5,6 +5,12 @@ const movies = require('./routes/movies');
 const rentals = require('./routes/rentals');
 const users = require('./routes/users');
 const auth = require('./routes/auth');
+const config = require('config');
+
+if (!config.get('jwtPrivateKey')) {
+	console.log('FATAL ERROR: jwtPrivateKey is not defined');
+	process.exit(1);
+}
 
 // Import mongoose
 const mongoose = require('mongoose');
