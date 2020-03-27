@@ -1,23 +1,18 @@
 const express = require('express');
 const router = express.Router();
-const mongoose = require('mongoose');
 const {users, validateUser} = require('../models/users');
+const _ = require('lodash');
 
 router.post('/', async (req, res) => {
 	// Validate the submitted user object
 	const {error} = validateUser(req);
 	if (error) return res.status(400).send(error.details[0].message);
 
-	// Validate that the user doesn't already exist
-	// Not allowing additional users?
-	let user = await users.findOne({ email: req.body.email });
+	// Determine if user exists
+	let user = await users.findOne(_.pick(req.body, ['email']));
 	if (user) return res.status(400).send('User already registered.')
 
-	const newUser = new users({
-		name: req.body.name,
-		email: req.body.email,
-		password: req.body.password
-	});
+	const newUser = new users(_.pick(req.body, ['name', 'email', 'password']));
 
 	try {
 		await newUser.save();
