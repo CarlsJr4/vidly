@@ -3,7 +3,14 @@ const router = express.Router();
 const {users, validateUser} = require('../models/users');
 const bcrypt = require('bcrypt');
 const _ = require('lodash');
+const auth = require('../middleware/auth');
 
+// Client doesn't send ID to server, we get ID from the JWT
+router.get('/me', auth, async (req, res) => {
+	// The user object comes from the decoded JWT, which is stored in the req object
+	const user = await users.findById(req.user._id).select('-password');
+	res.send(user);
+})
 
 router.post('/', async (req, res) => {
 	// Validate the submitted user object
