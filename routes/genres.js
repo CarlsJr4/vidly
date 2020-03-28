@@ -1,6 +1,7 @@
 // This routes module acts like its own mini-express app with its own routes
 const express = require('express'); 
 const router = express.Router();
+const auth = require('../middleware/auth');
 const {genres, validateData} = require('../models/genre');
 
 // Default GET route
@@ -24,7 +25,8 @@ router.get('/:id', async (req, res) => {
 
 
 // POST request
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
+
 	// This returns the actual document. We can call the variable to save to DB.
 	try {
 		let newGenre = new genres({title: req.body.title});
