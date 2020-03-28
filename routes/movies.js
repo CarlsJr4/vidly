@@ -2,6 +2,7 @@ const express = require('express');
 const { movies, validateMovie } = require('../models/movies');
 const { genres } = require('../models/genre');
 const router = express.Router();
+const auth = require('../middleware/auth');
 
 // Default GET route
 router.get('/', async (req, res) => {
@@ -11,7 +12,7 @@ router.get('/', async (req, res) => {
 
 
 //  Search for movies by ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', auth, async (req, res) => {
 	const id = req.params.id;
 	// Define movies here so the try catch block can read it
 	let movies;
@@ -29,7 +30,7 @@ router.get('/:id', async (req, res) => {
 
 
 // POST request
-router.post('/', async (req, res) => {
+router.post('/', auth, async (req, res) => {
 	const { error } = validateMovie(req);
 	if (error) return res.status(400).send(error.details[0].message);
 	let genre;
@@ -58,7 +59,7 @@ router.post('/', async (req, res) => {
 
 
 // PUT request
-router.put('/:id', async (req, res) => {
+router.put('/:id', auth, async (req, res) => {
 	// In this route, we can even update the genre of the movie
 	const id = req.params.id;
 	let updatedMovie;
@@ -97,7 +98,7 @@ router.put('/:id', async (req, res) => {
 
 
 // DELETE request 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', auth, async (req, res) => {
 	let movie;
 	const id = req.params.id;
 	try {
