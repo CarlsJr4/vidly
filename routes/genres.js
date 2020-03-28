@@ -2,6 +2,7 @@
 const express = require('express'); 
 const router = express.Router();
 const auth = require('../middleware/auth');
+const admin = require('../middleware/admin');
 const {genres, validateData} = require('../models/genre');
 
 // Default GET route
@@ -61,7 +62,7 @@ router.put('/:id', async (req, res) => {
 		
 
 // DELETE request
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', [auth, admin], async (req, res) => {
 	try {
 		const id = req.params.id;
 		const genre = await genres.findByIdAndRemove(id);
