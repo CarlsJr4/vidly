@@ -6,9 +6,14 @@ const admin = require('../middleware/admin');
 const {genres, validateData} = require('../models/genre');
 
 // Default GET route
-router.get('/', async (req, res) => {
-	const genres = await genres.find().sort('name');
-	res.send(genres);
+router.get('/', async (req, res, next) => {
+		try {
+			const genres = await genres.find().sort('name');
+			res.send(genres);
+		}
+		catch (ex) {
+			next(ex);
+		}
 	}
 );
 
