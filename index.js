@@ -1,4 +1,5 @@
 const express = require('express');
+require('express-async-errors'); // This package must be defined before all routes
 const genres = require('./routes/genres');
 const customers = require('./routes/customers');
 const movies = require('./routes/movies');

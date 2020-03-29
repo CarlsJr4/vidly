@@ -4,26 +4,21 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 const {genres, validateData} = require('../models/genre');
-const asyncMiddleware = require('../middleware/async');
 
 
 // Default GET route
-router.get('/', asyncMiddleware(async (req, res) => { // Our callback is async because it does async work
-			const genres = await genres.find().sort('name');
-			res.send(genres);
-	})
+router.get('/', async (req, res) => { // Our callback is async because it does async work
+		const allGenres = await genres.find().sort('name');
+		res.send(allGenres);
+	}
 );
 
 // GET specific genre by ID
 router.get('/:id', async (req, res) => {
 	const id = req.params.id;
-	try {
-		const genres = await genres.find({_id: id});
-		res.send(genres);
-	}
-	catch {
-		res.status(404).send('The genre with the given ID was not found.')
-	}
+	const genre = await genres.find({_id: id});
+	if (!genre) throw Error("failed");
+	res.send(genre);
 });
 
 
