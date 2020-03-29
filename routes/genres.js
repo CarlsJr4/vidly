@@ -4,17 +4,14 @@ const router = express.Router();
 const auth = require('../middleware/auth');
 const admin = require('../middleware/admin');
 const {genres, validateData} = require('../models/genre');
+const asyncMiddleware = require('../middleware/async');
+
 
 // Default GET route
-router.get('/', async (req, res, next) => {
-		try {
+router.get('/', asyncMiddleware(async (req, res) => { // Our callback is async because it does async work
 			const genres = await genres.find().sort('name');
 			res.send(genres);
-		}
-		catch (ex) {
-			next(ex);
-		}
-	}
+	})
 );
 
 // GET specific genre by ID
